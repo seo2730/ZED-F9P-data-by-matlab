@@ -175,4 +175,10 @@ for i = 1:10000
   
     
 end
-
+%%
+protocol = string(zeros(10,32));
+for j = 1:10
+    for i = 1:4
+         protocol(j,i:8*(i)) = dec2bin(hex2dec(raw(j,i))); 
+    end
+end
