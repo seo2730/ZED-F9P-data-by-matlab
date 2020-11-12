@@ -38,6 +38,9 @@ GLO = 6;
 
 parsing_count = 1;
 
+WN=0; toc=0; af1=0; af2=0; af3=0; Crs=0; del_n=0; M0=0; Cuc=0; e=0; Cus=0; 
+root_A=0; toe=0; Cic=0; omega0=0; Cis=0; i0=0; Crc=0; w=0; dot_omega=0; dot_i=0;
+
 for i = 1:10000
     Data = fread(MyPort,1);
 %     x(i) = uint64(Data);
@@ -89,22 +92,22 @@ for i = 1:10000
             data_packet(data_count,1) = dec2hex(x);%data_packet(data_count,1:8) = de2bi(x,8,'left-msb');
             if data_count == 1
                if x == 0
-                   fprintf("GPS ");
+                   %fprintf("GPS ");
                    sat = GPS;
                    GPS_ephemeris_raw = zeros((data_length-8),1);
                    GPS_ephemeris_raw = string(GPS_ephemeris_raw);
                elseif x == 2
-                   fprintf("GAL ")
+                   %fprintf("GAL ")
                    sat = GAL;
                    GAL_ephemeris_raw = zeros((data_length-8),1);
                    GAL_ephemeris_raw = string(GAL_ephemeris_raw);
                elseif x == 3 
-                   fprintf("BDS ")
+                   %fprintf("BDS ")
                    sat = BDS;
                    BDS_ephemeris_raw = zeros((data_length-8),1);
                    BDS_ephemeris_raw = string(BDS_ephemeris_raw);
                elseif x == 6
-                   fprintf("GLO ")
+                   %fprintf("GLO ")
                    sat = GLO;
                    GLO_ephemeris_raw = zeros((data_length-8),1);
                    GLO_ephemeris_raw = string(GLO_ephemeris_raw);
@@ -112,13 +115,13 @@ for i = 1:10000
                
             elseif data_count == 2
                 if sat == GPS
-                    fprintf("%d : ",x);
+                    %fprintf("%d : ",x);
                 elseif sat == GAL
-                    fprintf("%d : ",x);
+                    %fprintf("%d : ",x);
                 elseif sat == BDS
-                    fprintf("%d : ",x);
+                    %fprintf("%d : ",x);
                 elseif sat == GLO
-                    fprintf("%d : ",x);
+                    %fprintf("%d : ",x);
                 end
                  
             elseif data_count >= 9 && data_count<=data_length
@@ -148,6 +151,7 @@ for i = 1:10000
                 for j = 1:(data_length-8)/4
                     gps_data(j,:) = GPS_ephemeris_raw(4*(j)-3:4*(j),1)';
                 end
+                
             elseif sat == GAL
                 gal_data = string(zeros((data_length-8)/4,4));
                 for j = 1:(data_length-8)/4
@@ -164,11 +168,15 @@ for i = 1:10000
                     glo_data(j,:) = GLO_ephemeris_raw(4*(j)-3:4*(j),1)';
                 end                        
             end
+            if sat == GPS
+                [WN,toc,af1,af2,af3,Crs,del_n,M0,Cuc,e,Cus,root_A,toe,Cic,omega0,Cis,i0,Crc,w,dot_omega,dot_i] = GPS_GetEphemeris(gps_data)        
+            end
+            
             parsing_count = 1;
             data_count = 1;
 %             clearvars data_packet
             STATE = STATE_READY1;
-            fprintf("\n");
+%             fprintf("\n");
         otherwise
             
     end
