@@ -1,11 +1,11 @@
-classdef GLO_sat_pos < handle
+classdef GLO_ephemeris < handle
    properties
         raw_data;
         protocol = char(zeros(4,32));
    end
     
    methods
-       function model = GLO_sat_pos(ephemeris_raw_data)
+       function model = GLO_ephemeris(ephemeris_raw_data)
            model.raw_data = fliplr(ephemeris_raw_data);
            for j = 1:4
               for i = 1:4

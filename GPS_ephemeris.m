@@ -1,11 +1,11 @@
-classdef GPS_sat_pos < handle
+classdef GPS_ephemeris < handle
     properties
         raw_data;
         protocol= char(zeros(10,32));
     end
     
     methods
-        function model = GPS_sat_pos(ephemeris_raw_data)
+        function model = GPS_ephemeris(ephemeris_raw_data)
             model.raw_data = fliplr(ephemeris_raw_data);
             for j = 1:10
                 for i = 1:4

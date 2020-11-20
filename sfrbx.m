@@ -43,7 +43,7 @@ root_A=0; toe=0; Cic=0; omega0=0; Cis=0; i0=0; Crc=0; w=0; dot_omega=0; dot_i=0;
 
 saved_data = string(zeros(100,4)); q=1;
 
-for i = 1:10000
+for i = 1:200000
     Data = fread(MyPort,1);
 %     x(i) = uint64(Data);
     x = uint8(Data);
@@ -90,6 +90,7 @@ for i = 1:10000
             data_packet = string(data_packet);
             STATE = STATE_REAL_DATA;
             check = check +1;
+            
         case STATE_REAL_DATA
             data_packet(data_count,1) = dec2hex(x);%data_packet(data_count,1:8) = de2bi(x,8,'left-msb');
             if data_count == 1
@@ -173,7 +174,7 @@ for i = 1:10000
                 q = q + 1;
             end
             if sat == GPS
-                GPS_parameter = GPS_sat_pos(gps_data);
+                GPS_parameter = GPS_ephemeris(gps_data);
                 subframe_gps = GPS_parameter.FrameNumber();
                 
                 if subframe_gps == 1
@@ -185,7 +186,7 @@ for i = 1:10000
                 end
                 
             elseif sat == GLO
-                GLO_parameter = GLO_sat_pos(glo_data);
+                GLO_parameter = GLO_ephemeris(glo_data);
                 [frame,string_num] = GLO_parameter.frame();
                 
                 if frame == 1 || frame == 2 || frame == 3 || frame == 4
