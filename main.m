@@ -42,7 +42,10 @@ GLO = 6;
 
 parsing_count = 1;
 
-satellite = [];
+pseudo_list = [];
+eph_list = [];
+eph_count = 1;
+cur_sat = 0;
 
 for i = 1:100000
     Data = fread(MyPort,1);
@@ -124,12 +127,7 @@ for i = 1:100000
             %fprintf("\n");
             pseudo_range = GetPseudoRange(pseudo_range_raw);
             carrier_phase = GetCarrierPhase(carrier_phase_raw);
-            satellite = [gnssID svID pseudo_range carrier_phase];
-            for j=1:sat_num
-               if satellite(j,1)==GPS || satellite(j,1)==GLO
-                  GPS_GLO(j,:) = satellite(j,:); 
-               end
-            end
+            pseudo_list = [gnssID svID pseudo_range carrier_phase];
             
         case STATE_REAL_DATA_EPHEMERIS
             data_packet(data_count,1) = dec2hex(x);%data_packet(data_count,1:8) = de2bi(x,8,'left-msb');
@@ -171,15 +169,6 @@ for i = 1:100000
                     satID = x;
                 end
                 
-                if ~isempty(satellite)
-                    for j = 1:sat_num
-                        if GPS_GLO(j,1) == string(sat)
-                            if GPS_GLO(j,2) == string(satID)
-                                cur_sat = j;
-                            end
-                        end
-                    end
-                end
                  
             elseif data_count >= 9 && data_count<=data_length
                 if sat == GPS
@@ -224,25 +213,35 @@ for i = 1:100000
                     glo_data(j,:) = GLO_ephemeris_raw(4*(j)-3:4*(j),1)';
                 end                        
             end
+            
+            if isempty(eph_list)
+               eph_list(eph_count,1:2) = [sat, satID];
+            else
+               for i=1:eph_count
+                   if eph_list(i,1:2) == [sat, satID] 
+                        eph_list(i,1:2) = [sat, satID];
+                        cur_sat = i;
+                   else 
+                        eph_count = eph_count + 1; 
+                        eph_list(eph_count,1:2) = [sat, satID];
+                        cur_sat = eph_count;
+                   end
+               end
+            end
+            
             if sat == GPS
                 GPS_parameter = GPS_ephemeris(gps_data);
                 subframe_gps = GPS_parameter.FrameNumber();
                 
                 if subframe_gps == 1
                    [gps_WN,gps_toc,gps_af1,gps_af2,gps_af3] = GPS_parameter.subframe1();
-                   if ~isempty(GPS_GLO)
-                        GPS_GLO(cur_sat,5:9) = [gps_WN,gps_toc,gps_af1,gps_af2,gps_af3];
-                   end
+                   eph_list(cur_sat,5:9) = [gps_WN,gps_toc,gps_af1,gps_af2,gps_af3];
                 elseif subframe_gps == 2
                    [gps_Crs,gps_del_n,gps_M0,gps_Cuc,gps_e,gps_Cus,gps_root_A,gps_toe] = GPS_parameter.subframe2();
-                   if ~isempty(GPS_GLO)
-                        GPS_GLO(cur_sat,10:17) = [gps_Crs,gps_del_n,gps_M0,gps_Cuc,gps_e,gps_Cus,gps_root_A,gps_toe];
-                   end
+                   eph_list(cur_sat,10:17) = [gps_Crs,gps_del_n,gps_M0,gps_Cuc,gps_e,gps_Cus,gps_root_A,gps_toe];
                 elseif subframe_gps == 3
                    [gps_Cic,gps_omega0,gps_Cis,gps_i0,gps_Crc,gps_w,gps_dot_omega,gps_dot_i] = GPS_parameter.subframe3();
-                   if ~isempty(GPS_GLO)
-                        GPS_GLO(cur_sat,18:25) = [gps_Cic,gps_omega0,gps_Cis,gps_i0,gps_Crc,gps_w,gps_dot_omega,gps_dot_i];              
-                   end
+                   eph_list(cur_sat,18:25) = [gps_Cic,gps_omega0,gps_Cis,gps_i0,gps_Crc,gps_w,gps_dot_omega,gps_dot_i];              
                 end                
             elseif sat == GLO
                 GLO_parameter = GLO_ephemeris(glo_data);
