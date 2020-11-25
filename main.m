@@ -137,16 +137,16 @@ for i = 1:100000
                    sat = GPS;
                    GPS_ephemeris_raw = zeros((data_length-8),1);
                    GPS_ephemeris_raw = string(GPS_ephemeris_raw);
-               elseif x == 2
-                   %fprintf("GAL ")
-                   sat = GAL;
-                   GAL_ephemeris_raw = zeros((data_length-8),1);
-                   GAL_ephemeris_raw = string(GAL_ephemeris_raw);
-               elseif x == 3 
-                   %fprintf("BDS ")
-                   sat = BDS;
-                   BDS_ephemeris_raw = zeros((data_length-8),1);
-                   BDS_ephemeris_raw = string(BDS_ephemeris_raw);
+%                elseif x == 2
+%                    %fprintf("GAL ")
+%                    sat = GAL;
+%                    GAL_ephemeris_raw = zeros((data_length-8),1);
+%                    GAL_ephemeris_raw = string(GAL_ephemeris_raw);
+%                elseif x == 3 
+%                    %fprintf("BDS ")
+%                    sat = BDS;
+%                    BDS_ephemeris_raw = zeros((data_length-8),1);
+%                    BDS_ephemeris_raw = string(BDS_ephemeris_raw);
                elseif x == 6
                    fprintf("GLO ")
                    sat = GLO;
@@ -174,12 +174,12 @@ for i = 1:100000
                 if sat == GPS
                     GPS_ephemeris_raw(parsing_count,1) = data_packet(data_count,1);
                     parsing_count = parsing_count + 1;
-                elseif sat == GAL
-                    GAL_ephemeris_raw(parsing_count,1) = data_packet(data_count,1);
-                    parsing_count = parsing_count + 1;
-                elseif sat == BDS
-                    BDS_ephemeris_raw(parsing_count,1) = data_packet(data_count,1);
-                    parsing_count = parsing_count + 1;
+%                 elseif sat == GAL
+%                     GAL_ephemeris_raw(parsing_count,1) = data_packet(data_count,1);
+%                     parsing_count = parsing_count + 1;
+%                 elseif sat == BDS
+%                     BDS_ephemeris_raw(parsing_count,1) = data_packet(data_count,1);
+%                     parsing_count = parsing_count + 1;
                 elseif sat == GLO
                     GLO_ephemeris_raw(parsing_count,1) = data_packet(data_count,1);
                     parsing_count = parsing_count + 1;
@@ -197,16 +197,16 @@ for i = 1:100000
                     gps_data(j,:) = GPS_ephemeris_raw(4*(j)-3:4*(j),1)';
                 end
                 
-            elseif sat == GAL
-                gal_data = string(zeros((data_length-8)/4,4));
-                for j = 1:(data_length-8)/4
-                    gal_data(j,:) = GAL_ephemeris_raw(4*(j)-3:4*(j),1)';
-                end
-            elseif sat == BDS
-                bds_data = string(zeros((data_length-8)/4,4));
-                for j = 1:(data_length-8)/4
-                    bds_data(j,:) = BDS_ephemeris_raw(4*(j)-3:4*(j),1)';
-                end 
+%             elseif sat == GAL
+%                 gal_data = string(zeros((data_length-8)/4,4));
+%                 for j = 1:(data_length-8)/4
+%                     gal_data(j,:) = GAL_ephemeris_raw(4*(j)-3:4*(j),1)';
+%                 end
+%             elseif sat == BDS
+%                 bds_data = string(zeros((data_length-8)/4,4));
+%                 for j = 1:(data_length-8)/4
+%                     bds_data(j,:) = BDS_ephemeris_raw(4*(j)-3:4*(j),1)';
+%                 end 
             elseif sat == GLO
                 glo_data = string(zeros((data_length-8)/4,4));
                 for j = 1:(data_length-8)/4
@@ -221,7 +221,7 @@ for i = 1:100000
                    if eph_list(i,1:2) == [sat, satID] 
                         eph_list(i,1:2) = [sat, satID];
                         cur_sat = i;
-                   else 
+                   elseif i == eph_count 
                         eph_count = eph_count + 1; 
                         eph_list(eph_count,1:2) = [sat, satID];
                         cur_sat = eph_count;
@@ -250,39 +250,52 @@ for i = 1:100000
                 if frame == 1 || frame == 2 || frame == 3 || frame == 4
                    if string_num == 1
                        [glo_P1,glo_tk,glo_vx,glo_ax,glo_x] = GLO_parameter.string1();
-                       %satellite(cur_sat,3:7) = [glo_P1,glo_tk,glo_vx,glo_ax,glo_x];
+                       eph_list(cur_sat,5:9) = [glo_P1,glo_tk,glo_vx,glo_ax,glo_x];
                    elseif string_num == 2
                        [glo_Bn,glo_P2,glo_tb,glo_vy,glo_ay,glo_y] = GLO_parameter.string2();
-                       %satellite(cur_sat,8:13) = [glo_Bn,glo_P2,glo_tb,glo_vy,glo_ay,glo_y];
+                       eph_list(cur_sat,10:15) = [glo_Bn,glo_P2,glo_tb,glo_vy,glo_ay,glo_y];
                    elseif string_num == 3
-                       [glo_P3,glo_rn,glo_P,glo_ln,glo_vz,glo_az,glo_z] = GLO_parameter.string3();                       
+                       [glo_P3,glo_rn,glo_P,glo_ln,glo_vz,glo_az,glo_z] = GLO_parameter.string3();    
+                       eph_list(cur_sat,16:22) = [glo_P3,glo_rn,glo_P,glo_ln,glo_vz,glo_az,glo_z];
                    elseif string_num == 4
-                       [glo_taun,glo_del_taun,glo_En,glo_P4,glo_FT,glo_NT,glo_n,glo_M] = GLO_parameter.string4();                
+                       [glo_taun,glo_del_taun,glo_En,glo_P4,glo_FT,glo_NT,glo_n,glo_M] = GLO_parameter.string4();
+                       eph_list(cur_sat,23:30) = [glo_taun,glo_del_taun,glo_En,glo_P4,glo_FT,glo_NT,glo_n,glo_M];
                    elseif string_num == 5
                        [glo_NA,glo_tau_c,glo_N4,glo_tau_GPS,glo_ln] = GLO_parameter.string5();
+                       eph_list(cur_sat,31:35) = [glo_NA,glo_tau_c,glo_N4,glo_tau_GPS,glo_ln];
                    elseif string_num == 6 || string_num == 8 || string_num == 10 || string_num == 12 || string_num == 14
                        [glo_Cn,glo_Man,glo_nA,glo_tau_An,glo_lamda_An,glo_del_i_An,glo_e_An] = GLO_parameter.string_even();
+                       eph_list(cur_sat,36:42) = [glo_Cn,glo_Man,glo_nA,glo_tau_An,glo_lamda_An,glo_del_i_An,glo_e_An];
                    elseif string_num == 7 || string_num == 9 || string_num == 11 || string_num == 13 || string_num == 15
                        [glo_w_An,glo_tau_Alam,glo_del_T_An,glo_del_dotT_An,glo_del_H_An,glo_ln] = GLO_parameter.string_odd();
+                       eph_list(cur_sat,43:48) = [glo_w_An,glo_tau_Alam,glo_del_T_An,glo_del_dotT_An,glo_del_H_An,glo_ln];
                    end
                    
                 elseif frame == 5
                    if string_num == 1
-                       [glo_P1,glo_tk,glo_vx,glo_ax,glo_x] = GLO_parameter.string1();                
+                       [glo_P1,glo_tk,glo_vx,glo_ax,glo_x] = GLO_parameter.string1();      
+                       eph_list(cur_sat,5:9) = [glo_P1,glo_tk,glo_vx,glo_ax,glo_x];
                    elseif string_num == 2
                        [glo_Bn,glo_P2,glo_tb,glo_vy,glo_ay,glo_y] = GLO_parameter.string2();
+                       eph_list(cur_sat,10:15) = [glo_Bn,glo_P2,glo_tb,glo_vy,glo_ay,glo_y];
                    elseif string_num == 3
-                       [glo_P3,glo_rn,glo_P,glo_ln,glo_vz,glo_az,glo_z] = GLO_parameter.string3();                       
+                       [glo_P3,glo_rn,glo_P,glo_ln,glo_vz,glo_az,glo_z] = GLO_parameter.string3();    
+                       eph_list(cur_sat,16:22) = [glo_P3,glo_rn,glo_P,glo_ln,glo_vz,glo_az,glo_z];
                    elseif string_num == 4
-                       [glo_taun,glo_del_taun,glo_En,glo_P4,glo_FT,glo_NT,glo_n,glo_M] = GLO_parameter.string4();                
+                       [glo_taun,glo_del_taun,glo_En,glo_P4,glo_FT,glo_NT,glo_n,glo_M] = GLO_parameter.string4();         
+                       eph_list(cur_sat,23:30) = [glo_taun,glo_del_taun,glo_En,glo_P4,glo_FT,glo_NT,glo_n,glo_M];
                    elseif string_num == 5
                        [glo_NA,glo_tau_e,glo_N4,glo_tau_GPS,glo_ln] = GLO_parameter.string5();
+                       eph_list(cur_sat,31:35) = [glo_NA,glo_tau_c,glo_N4,glo_tau_GPS,glo_ln];
                    elseif string_num == 6 || string_num == 8 || string_num == 10 || string_num == 12 
                        [glo_Cn,glo_Man,glo_nA,glo_tau_An,glo_lamda_An,glo_del_i_An,glo_e_An] = GLO_parameter.string_even();
+                       eph_list(cur_sat,36:42) = [glo_Cn,glo_Man,glo_nA,glo_tau_An,glo_lamda_An,glo_del_i_An,glo_e_An];
                    elseif string_num == 7 || string_num == 9 || string_num == 11 || string_num == 13 
                        [glo_w_An,glo_tau_Alam,glo_del_T_An,glo_del_dotT_An,glo_del_H_An,glo_ln] = GLO_parameter.string_odd();
+                       eph_list(cur_sat,43:48) = [glo_w_An,glo_tau_Alam,glo_del_T_An,glo_del_dotT_An,glo_del_H_An,glo_ln];
                    elseif string_num == 14
                        [glo_B1,glo_B2,glo_KP] = GLO_parameter.string14_5();
+                       eph_list(cur_sat,49:51) = [glo_B1,glo_B2,glo_KP];
                    end                    
                 end
             end
