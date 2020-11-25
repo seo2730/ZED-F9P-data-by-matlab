@@ -221,7 +221,7 @@ for i = 1:100000
                    if eph_list(i,1:2) == [sat, satID] 
                         eph_list(i,1:2) = [sat, satID];
                         cur_sat = i;
-                   elseif i == eph_count 
+                   elseif eph_list(eph_count,1:2) ~= [sat, satID]
                         eph_count = eph_count + 1; 
                         eph_list(eph_count,1:2) = [sat, satID];
                         cur_sat = eph_count;
