@@ -124,7 +124,9 @@ for i = 1:100000
             %fprintf("\n");
             pseudo_range = GetPseudoRange(pseudo_range_raw);
             carrier_phase = GetCarrierPhase(carrier_phase_raw);
-            satellite = [gnssID svID pseudo_range carrier_phase];
+            if gnssID == GPS || gnssID == GLO
+                satellite = [gnssID svID pseudo_range carrier_phase];
+            end
             
         case STATE_REAL_DATA_EPHEMERIS
             data_packet(data_count,1) = dec2hex(x);%data_packet(data_count,1:8) = de2bi(x,8,'left-msb');
