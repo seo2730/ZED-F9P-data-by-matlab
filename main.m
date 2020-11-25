@@ -124,8 +124,11 @@ for i = 1:100000
             %fprintf("\n");
             pseudo_range = GetPseudoRange(pseudo_range_raw);
             carrier_phase = GetCarrierPhase(carrier_phase_raw);
-            if gnssID == GPS || gnssID == GLO
-                satellite = [gnssID svID pseudo_range carrier_phase];
+            satellite = [gnssID svID pseudo_range carrier_phase];
+            for j=1:sat_num
+               if satellite(j,1)==GPS || satellite(j,1)==GLO
+                  GPS_GLO(j,:) = satellite(j,:); 
+               end
             end
             
         case STATE_REAL_DATA_EPHEMERIS
@@ -170,8 +173,8 @@ for i = 1:100000
                 
                 if ~isempty(satellite)
                     for j = 1:sat_num
-                        if satellite(j,1) == string(sat)
-                            if satellite(j,2) == string(satID)
+                        if GPS_GLO(j,1) == string(sat)
+                            if GPS_GLO(j,2) == string(satID)
                                 cur_sat = j;
                             end
                         end
@@ -227,18 +230,18 @@ for i = 1:100000
                 
                 if subframe_gps == 1
                    [gps_WN,gps_toc,gps_af1,gps_af2,gps_af3] = GPS_parameter.subframe1();
-                   if ~isempty(satellite)
-                        satellite(cur_sat,5:9) = [gps_WN,gps_toc,gps_af1,gps_af2,gps_af3];
+                   if ~isempty(GPS_GLO)
+                        GPS_GLO(cur_sat,5:9) = [gps_WN,gps_toc,gps_af1,gps_af2,gps_af3];
                    end
                 elseif subframe_gps == 2
                    [gps_Crs,gps_del_n,gps_M0,gps_Cuc,gps_e,gps_Cus,gps_root_A,gps_toe] = GPS_parameter.subframe2();
-                   if ~isempty(satellite)
-                        satellite(cur_sat,10:17) = [gps_Crs,gps_del_n,gps_M0,gps_Cuc,gps_e,gps_Cus,gps_root_A,gps_toe];
+                   if ~isempty(GPS_GLO)
+                        GPS_GLO(cur_sat,10:17) = [gps_Crs,gps_del_n,gps_M0,gps_Cuc,gps_e,gps_Cus,gps_root_A,gps_toe];
                    end
                 elseif subframe_gps == 3
                    [gps_Cic,gps_omega0,gps_Cis,gps_i0,gps_Crc,gps_w,gps_dot_omega,gps_dot_i] = GPS_parameter.subframe3();
-                   if ~isempty(satellite)
-                        satellite(cur_sat,18:25) = [gps_Cic,gps_omega0,gps_Cis,gps_i0,gps_Crc,gps_w,gps_dot_omega,gps_dot_i];              
+                   if ~isempty(GPS_GLO)
+                        GPS_GLO(cur_sat,18:25) = [gps_Cic,gps_omega0,gps_Cis,gps_i0,gps_Crc,gps_w,gps_dot_omega,gps_dot_i];              
                    end
                 end                
             elseif sat == GLO
