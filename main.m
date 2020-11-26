@@ -137,16 +137,16 @@ for i = 1:100000
                    sat = GPS;
                    GPS_ephemeris_raw = zeros((data_length-8),1);
                    GPS_ephemeris_raw = string(GPS_ephemeris_raw);
-%                elseif x == 2
-%                    %fprintf("GAL ")
-%                    sat = GAL;
-%                    GAL_ephemeris_raw = zeros((data_length-8),1);
-%                    GAL_ephemeris_raw = string(GAL_ephemeris_raw);
-%                elseif x == 3 
-%                    %fprintf("BDS ")
-%                    sat = BDS;
-%                    BDS_ephemeris_raw = zeros((data_length-8),1);
-%                    BDS_ephemeris_raw = string(BDS_ephemeris_raw);
+               elseif x == 2
+                   %fprintf("GAL ")
+                   sat = GAL;
+                   GAL_ephemeris_raw = zeros((data_length-8),1);
+                   GAL_ephemeris_raw = string(GAL_ephemeris_raw);
+               elseif x == 3 
+                   %fprintf("BDS ")
+                   sat = BDS;
+                   BDS_ephemeris_raw = zeros((data_length-8),1);
+                   BDS_ephemeris_raw = string(BDS_ephemeris_raw);
                elseif x == 6
                    fprintf("GLO ")
                    sat = GLO;
@@ -214,19 +214,22 @@ for i = 1:100000
                 end                        
             end
             
-            if isempty(eph_list)
-               eph_list(eph_count,1:2) = [sat, satID];
-            else
-               for i=1:eph_count
-                   if eph_list(i,1:2) == [sat, satID] 
-                        eph_list(i,1:2) = [sat, satID];
-                        cur_sat = i;
-                   elseif eph_list(eph_count,1:2) ~= [sat, satID]
-                        eph_count = eph_count + 1; 
-                        eph_list(eph_count,1:2) = [sat, satID];
-                        cur_sat = eph_count;
+            if sat == GPS || sat == GLO
+                if isempty(eph_list)
+                   eph_list(eph_count,1:2) = [sat, satID];
+                else
+                   for i=1:eph_count
+                       if eph_list(i,1:2) == [sat, satID] 
+                            eph_list(i,1:2) = [sat, satID];
+                            cur_sat = i;
+                            break;
+                       elseif eph_list(eph_count,1:2) ~= [sat, satID]
+                            eph_count = eph_count + 1; 
+                            eph_list(eph_count,1:2) = [sat, satID];
+                            cur_sat = eph_count;
+                       end
                    end
-               end
+                end
             end
             
             if sat == GPS
