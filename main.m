@@ -2,7 +2,7 @@ close all
 clear
 clc
 delete(instrfindall); %Solved unavailable port error
-MyPort = serial('COM12','baudrate',9600,'databits',8,'parity','none','stopbits',1,'readasyncmode','continuous');
+MyPort = serial('COM28','baudrate',9600,'databits',8,'parity','none','stopbits',1,'readasyncmode','continuous');
 fopen(MyPort);
 disp(MyPort)
 disp('Start reading')
@@ -49,7 +49,7 @@ cur_sat = 0;
 
 for i = 1:100000
     Data = fread(MyPort,1);
-    %     x(i) = uint64(Data);
+    %     x(i) = uint64(Data);    
     x = uint8(Data);
     instant = dec2hex(Data);
     %fprintf("%02x,", x);
@@ -84,7 +84,7 @@ for i = 1:100000
                 STATE = STATE_READY1;
             end
         case STATE_LENGTH1
-            %xÏóê Îì§Ïñ¥Ïò® Í∞íÏùÑ ÏåìÏïÑÏïºÌï® 
+             %xø° µÈæÓø¬ ∞™¿ª Ω◊æ∆æﬂ«‘ 
             DATA_LENGTH_CHECK(1,1) = x;
             STATE = STATE_LENGTH2;
             
@@ -98,7 +98,7 @@ for i = 1:100000
             data_packet = string(data_packet);
             
             if ID == PSEUDORANGE 
-                sat_num = (data_length-16)/32;          % Ïó∞Í≤∞ÎêòÏñ¥ ÏûàÎäî Ïù∏Í≥µÏúÑÏÑ± Ïàò
+                sat_num = (data_length-16)/32;          % ø¨∞·µ«æÓ ¿÷¥¬ ¿Œ∞¯¿ßº∫ ºˆ
                 sat_data = zeros(sat_num, 32);
                 sat_data = string(sat_data);
                 STATE = STATE_REAL_DATA_PSEUDO;
@@ -223,10 +223,13 @@ for i = 1:100000
                             eph_list(i,1:2) = [sat, satID];
                             cur_sat = i;
                             break;
-                       elseif eph_list(eph_count,1:2) ~= [sat, satID]
-                            eph_count = eph_count + 1; 
-                            eph_list(eph_count,1:2) = [sat, satID];
-                            cur_sat = eph_count;
+                       end
+                       if i == eph_count
+                           if eph_list(i,1:2) ~= [sat, satID]
+                                eph_count = eph_count + 1; 
+                                eph_list(eph_count,1:2) = [sat, satID];
+                                cur_sat = eph_count;
+                           end
                        end
                    end
                 end
@@ -268,10 +271,10 @@ for i = 1:100000
                        eph_list(cur_sat,31:35) = [glo_NA,glo_tau_c,glo_N4,glo_tau_GPS,glo_ln];
                    elseif string_num == 6 || string_num == 8 || string_num == 10 || string_num == 12 || string_num == 14
                        [glo_Cn,glo_Man,glo_nA,glo_tau_An,glo_lamda_An,glo_del_i_An,glo_e_An] = GLO_parameter.string_even();
-                       eph_list(cur_sat,36:42) = [glo_Cn,glo_Man,glo_nA,glo_tau_An,glo_lamda_An,glo_del_i_An,glo_e_An];
+                       %eph_list(cur_sat,36:42) = [glo_Cn,glo_Man,glo_nA,glo_tau_An,glo_lamda_An,glo_del_i_An,glo_e_An];
                    elseif string_num == 7 || string_num == 9 || string_num == 11 || string_num == 13 || string_num == 15
                        [glo_w_An,glo_tau_Alam,glo_del_T_An,glo_del_dotT_An,glo_del_H_An,glo_ln] = GLO_parameter.string_odd();
-                       eph_list(cur_sat,43:48) = [glo_w_An,glo_tau_Alam,glo_del_T_An,glo_del_dotT_An,glo_del_H_An,glo_ln];
+                       %eph_list(cur_sat,43:48) = [glo_w_An,glo_tau_Alam,glo_del_T_An,glo_del_dotT_An,glo_del_H_An,glo_ln];
                    end
                    
                 elseif frame == 5
@@ -292,13 +295,13 @@ for i = 1:100000
                        eph_list(cur_sat,31:35) = [glo_NA,glo_tau_c,glo_N4,glo_tau_GPS,glo_ln];
                    elseif string_num == 6 || string_num == 8 || string_num == 10 || string_num == 12 
                        [glo_Cn,glo_Man,glo_nA,glo_tau_An,glo_lamda_An,glo_del_i_An,glo_e_An] = GLO_parameter.string_even();
-                       eph_list(cur_sat,36:42) = [glo_Cn,glo_Man,glo_nA,glo_tau_An,glo_lamda_An,glo_del_i_An,glo_e_An];
+                       %eph_list(cur_sat,36:42) = [glo_Cn,glo_Man,glo_nA,glo_tau_An,glo_lamda_An,glo_del_i_An,glo_e_An];
                    elseif string_num == 7 || string_num == 9 || string_num == 11 || string_num == 13 
                        [glo_w_An,glo_tau_Alam,glo_del_T_An,glo_del_dotT_An,glo_del_H_An,glo_ln] = GLO_parameter.string_odd();
-                       eph_list(cur_sat,43:48) = [glo_w_An,glo_tau_Alam,glo_del_T_An,glo_del_dotT_An,glo_del_H_An,glo_ln];
+                       %eph_list(cur_sat,43:48) = [glo_w_An,glo_tau_Alam,glo_del_T_An,glo_del_dotT_An,glo_del_H_An,glo_ln];
                    elseif string_num == 14
                        [glo_B1,glo_B2,glo_KP] = GLO_parameter.string14_5();
-                       eph_list(cur_sat,49:51) = [glo_B1,glo_B2,glo_KP];
+                       %eph_list(cur_sat,49:51) = [glo_B1,glo_B2,glo_KP];
                    end                    
                 end
             end
