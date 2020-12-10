@@ -154,8 +154,8 @@ for i = 1:1000000
                    sat = GLO;
                    GLO_ephemeris_raw = zeros((data_length-8),1);
                    GLO_ephemeris_raw = string(GLO_ephemeris_raw);
-               else
-                  STATE = STATE_READY1;
+%                else
+%                   STATE = STATE_READY1;
                end
                
             elseif data_count == 2
