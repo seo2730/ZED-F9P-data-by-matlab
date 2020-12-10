@@ -1,4 +1,3 @@
-close all
 clear
 clc
 delete(instrfindall); %Solved unavailable port error
@@ -47,7 +46,8 @@ eph_list = [];
 eph_count = 1;
 cur_sat = 0;
 
-for i = 1:100000
+sat = 100;
+for i = 1:1000000
     Data = fread(MyPort,1);
     %     x(i) = uint64(Data);    
     x = uint8(Data);
@@ -217,8 +217,8 @@ for i = 1:100000
                 for j = 1:(data_length-8)/4
                     glo_data(j,:) = GLO_ephemeris_raw(4*(j)-3:4*(j),1)';
                 end           
-            else
-                STATE = STATE_READY1;
+%             else
+%                 STATE = STATE_READY1;
             end
             
             if sat == GPS || sat == GLO
