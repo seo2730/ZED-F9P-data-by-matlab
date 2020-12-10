@@ -18,6 +18,10 @@ classdef GPS_ephemeris < handle
             num = bin2dec(model.protocol(2,20:22));
         end
         
+        function sig = CheckPad(model)
+            sig = bin2dec(model.protocol(1,1:2)); 
+        end
+        
         function [WN,toc,af1,af2,af3] = subframe1(model)
             WN = bin2dec(model.protocol(3,3:12))+1024;
             toc = bin2dec(model.protocol(8,11:26))*2^4; 

@@ -245,17 +245,21 @@ for i = 1:1000000
             if sat == GPS
                 GPS_parameter = GPS_ephemeris(gps_data);
                 subframe_gps = GPS_parameter.FrameNumber();
+                sig = GPS_parameter.CheckPad();
                 
-                if subframe_gps == 1
-                   [gps_WN,gps_toc,gps_af1,gps_af2,gps_af3] = GPS_parameter.subframe1();
-                   eph_list(cur_sat,5:9) = [gps_WN,gps_toc,gps_af1,gps_af2,gps_af3];
-                elseif subframe_gps == 2
-                   [gps_Crs,gps_del_n,gps_M0,gps_Cuc,gps_e,gps_Cus,gps_root_A,gps_toe] = GPS_parameter.subframe2();
-                   eph_list(cur_sat,10:17) = [gps_Crs,gps_del_n,gps_M0,gps_Cuc,gps_e,gps_Cus,gps_root_A,gps_toe];
-                elseif subframe_gps == 3
-                   [gps_Cic,gps_omega0,gps_Cis,gps_i0,gps_Crc,gps_w,gps_dot_omega,gps_dot_i] = GPS_parameter.subframe3();
-                   eph_list(cur_sat,18:25) = [gps_Cic,gps_omega0,gps_Cis,gps_i0,gps_Crc,gps_w,gps_dot_omega,gps_dot_i];              
-                end                
+                if sig == 0
+                    if subframe_gps == 1
+                       [gps_WN,gps_toc,gps_af1,gps_af2,gps_af3] = GPS_parameter.subframe1();
+                       eph_list(cur_sat,5:9) = [gps_WN,gps_toc,gps_af1,gps_af2,gps_af3];
+                    elseif subframe_gps == 2
+                       [gps_Crs,gps_del_n,gps_M0,gps_Cuc,gps_e,gps_Cus,gps_root_A,gps_toe] = GPS_parameter.subframe2();
+                       eph_list(cur_sat,10:17) = [gps_Crs,gps_del_n,gps_M0,gps_Cuc,gps_e,gps_Cus,gps_root_A,gps_toe];
+                    elseif subframe_gps == 3
+                       [gps_Cic,gps_omega0,gps_Cis,gps_i0,gps_Crc,gps_w,gps_dot_omega,gps_dot_i] = GPS_parameter.subframe3();
+                       eph_list(cur_sat,18:25) = [gps_Cic,gps_omega0,gps_Cis,gps_i0,gps_Crc,gps_w,gps_dot_omega,gps_dot_i];              
+                    end                
+                end
+                
             elseif sat == GLO
                 GLO_parameter = GLO_ephemeris(glo_data);
                 [frame,string_num] = GLO_parameter.frame();
