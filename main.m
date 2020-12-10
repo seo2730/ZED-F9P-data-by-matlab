@@ -104,6 +104,8 @@ for i = 1:100000
                 STATE = STATE_REAL_DATA_PSEUDO;
             elseif ID == EPHEMERIS
                 STATE = STATE_REAL_DATA_EPHEMERIS;
+            else
+                STATE = STATE_READY1;
             end
             
         case STATE_REAL_DATA_PSEUDO
@@ -137,36 +139,40 @@ for i = 1:100000
                    sat = GPS;
                    GPS_ephemeris_raw = zeros((data_length-8),1);
                    GPS_ephemeris_raw = string(GPS_ephemeris_raw);
-               elseif x == 2
-                   %fprintf("GAL ")
-                   sat = GAL;
-                   GAL_ephemeris_raw = zeros((data_length-8),1);
-                   GAL_ephemeris_raw = string(GAL_ephemeris_raw);
-               elseif x == 3 
-                   %fprintf("BDS ")
-                   sat = BDS;
-                   BDS_ephemeris_raw = zeros((data_length-8),1);
-                   BDS_ephemeris_raw = string(BDS_ephemeris_raw);
+%                elseif x == 2
+%                    %fprintf("GAL ")
+%                    sat = GAL;
+%                    GAL_ephemeris_raw = zeros((data_length-8),1);
+%                    GAL_ephemeris_raw = string(GAL_ephemeris_raw);
+%                elseif x == 3 
+%                    %fprintf("BDS ")
+%                    sat = BDS;
+%                    BDS_ephemeris_raw = zeros((data_length-8),1);
+%                    BDS_ephemeris_raw = string(BDS_ephemeris_raw);
                elseif x == 6
                    fprintf("GLO ")
                    sat = GLO;
                    GLO_ephemeris_raw = zeros((data_length-8),1);
                    GLO_ephemeris_raw = string(GLO_ephemeris_raw);
+               else
+                  STATE = STATE_READY1;
                end
                
             elseif data_count == 2
                 if sat == GPS
                     fprintf("%d\n",x);
                     satID = x;
-                elseif sat == GAL
-                    %fprintf("%d : ",x);
-                    satID = x;
-                elseif sat == BDS
-                    %fprintf("%d : ",x);
-                    satID = x;
+%                 elseif sat == GAL
+%                     %fprintf("%d : ",x);
+%                     satID = x;
+%                 elseif sat == BDS
+%                     %fprintf("%d : ",x);
+%                     satID = x;
                 elseif sat == GLO
                     fprintf("%d\n",x);
                     satID = x;
+                else
+                    STATE = STATE_READY1;
                 end
                 
                  
@@ -195,8 +201,7 @@ for i = 1:100000
                 gps_data = string(zeros((data_length-8)/4,4));
                 for j = 1:(data_length-8)/4
                     gps_data(j,:) = GPS_ephemeris_raw(4*(j)-3:4*(j),1)';
-                end
-                
+                end             
 %             elseif sat == GAL
 %                 gal_data = string(zeros((data_length-8)/4,4));
 %                 for j = 1:(data_length-8)/4
@@ -211,7 +216,9 @@ for i = 1:100000
                 glo_data = string(zeros((data_length-8)/4,4));
                 for j = 1:(data_length-8)/4
                     glo_data(j,:) = GLO_ephemeris_raw(4*(j)-3:4*(j),1)';
-                end                        
+                end           
+            else
+                STATE = STATE_READY1;
             end
             
             if sat == GPS || sat == GLO
@@ -309,10 +316,12 @@ for i = 1:100000
             parsing_count = 1;
             data_count = 1;
 %             clearvars data_packet
+            sat = 100;
             STATE = STATE_READY1; 
         otherwise
     end
     
     
 end
+
 
