@@ -152,9 +152,9 @@ for i = 1:100000
         case STATE_REAL_READY_EPHEMERIS
             if sat == GPS
                 gps_data = string(zeros((data_length-8)/4,4));
-%                 for j = 1:(data_length-8)/4
-%                     gps_data(j,:) = GPS_ephemeris_raw(4*(j)-3:4*(j),1)';
-%                end    
+                for j = 1:(data_length-8)/4
+                    gps_data(j,:) = GPS_ephemeris_raw(4*(j)-3:4*(j),1)';
+               end    
 %             elseif sat == GAL
 %                 gal_data = string(zeros((data_length-8)/4,4));
 %                 for j = 1:(data_length-8)/4
@@ -167,9 +167,9 @@ for i = 1:100000
 %                 end 
             elseif sat == GLO
                 glo_data = string(zeros((data_length-8)/4,4));
-%                 for j = 1:(data_length-8)/4
-%                     glo_data(j,:) = GLO_ephemeris_raw(4*(j)-3:4*(j),1)';
-%                 end                        
+                for j = 1:(data_length-8)/4
+                    glo_data(j,:) = GLO_ephemeris_raw(4*(j)-3:4*(j),1)';
+                end                        
             end
             
             if sat == GPS || sat == GLO
