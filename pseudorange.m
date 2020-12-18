@@ -80,7 +80,7 @@ for i = 1:1000000
                 STATE = STATE_READY1;
             end
         case STATE_LENGTH1
-             %xì— ë“¤ì–´ì˜¨ ê°’ì„ ìŒ“ì•„ì•¼í•¨ 
+             %x?— ?“¤?–´?˜¨ ê°’ì„ ?Œ“?•„?•¼?•¨ 
             DATA_LENGTH_CHECK(1,1) = x;
             STATE = STATE_LENGTH2;
             
@@ -92,10 +92,11 @@ for i = 1:1000000
             data_length = hex2dec(cal_hex);
             data_packet = zeros(data_length+packet_check_length,1);
             data_packet = string(data_packet);
-            sat_num = (data_length-16)/32;          % ì—°ê²°ë˜ì–´ ìˆëŠ” ì¸ê³µìœ„ì„± ìˆ˜
+            sat_num = (data_length-16)/32;          % ?—°ê²°ë˜?–´ ?ˆ?Š” ?¸ê³µìœ„?„± ?ˆ˜
             sat_data = zeros(sat_num, 32);
             sat_data = string(sat_data);
             STATE = STATE_REAL_DATA_PSEUDO;
+
    
         case STATE_REAL_DATA_PSEUDO
             data_packet(data_count,1) = dec2hex(x);
@@ -118,7 +119,7 @@ for i = 1:1000000
             %fprintf("\n");
             pseudo_range = GetPseudoRange(pseudo_range_raw);
             carrier_phase = GetCarrierPhase(carrier_phase_raw);
-            pseudo_list = [gnssID svID pseudo_range carrier_phase];
+            pseudo_list = [gnssID svID pseudo_range carrier_phase]
         otherwise
     end
     

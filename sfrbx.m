@@ -2,7 +2,7 @@ close all
 clear
 clc
 delete(instrfindall); %Solved unavailable port error
-MyPort = serial('COM12','baudrate',9600,'databits',8,'parity','none','stopbits',1,'readasyncmode','continuous');
+MyPort = serial('COM28','baudrate',9600,'databits',8,'parity','none','stopbits',1,'readasyncmode','continuous');
 fopen(MyPort);
 disp(MyPort)
 disp('Start reading')
@@ -38,12 +38,12 @@ GLO = 6;
 
 parsing_count = 1;
 
-WN=0; toc=0; af1=0; af2=0; af3=0; Crs=0; del_n=0; M0=0; Cuc=0; e=0; Cus=0; 
-root_A=0; toe=0; Cic=0; omega0=0; Cis=0; i0=0; Crc=0; w=0; dot_omega=0; dot_i=0;
+eph_list = [];
+eph_count = 1;
+cur_sat = 0;
 
-saved_data = string(zeros(100,4)); q=1;
-
-for i = 1:200000
+sat = 100;
+for i = 1:100000
     Data = fread(MyPort,1);
 %     x(i) = uint64(Data);
     x = uint8(Data);
@@ -75,20 +75,20 @@ for i = 1:200000
                 STATE = STATE_READY1;
             end
         case STATE_LENGTH1
-            %xì— ë“¤ì–´ì˜¨ ê°’ì„ ìŒ“ì•„ì•¼í•¨ 
-            DATA_LENGTH_CHECK(1,1) = x;                     % ë°ì´í„° ê¸¸ì´ ì²«ë²ˆì§¸ í”„ë¡œí† ì½œ(ì‹¤ì œëŠ” ë‘ë²ˆì§¸ ê°’)
+            %x?— ?“¤?–´?˜¨ ê°’ì„ ?Œ“?•„?•¼?•¨ 
+            DATA_LENGTH_CHECK(1,1) = x;                     % ?°?´?„° ê¸¸ì´ ì²«ë²ˆì§? ?”„ë¡œí† ì½?(?‹¤? œ?Š” ?‘ë²ˆì§¸ ê°?)
             STATE = STATE_LENGTH2;
             
         case STATE_LENGTH2
-            DATA_LENGTH_CHECK(2,1) = x;                     % ë°ì´í„° ê¸¸ì´ ë‘ë²ˆì§¸ í”„ë¡œí† ì½œ(ì‹¤ì œëŠ” ì²«ë²ˆì§¸ ê°’)
+            DATA_LENGTH_CHECK(2,1) = x;                     % ?°?´?„° ê¸¸ì´ ?‘ë²ˆì§¸ ?”„ë¡œí† ì½?(?‹¤? œ?Š” ì²«ë²ˆì§? ê°?)
             cal_hex1 = dec2hex(DATA_LENGTH_CHECK(1,1));
             cal_hex2 = dec2hex(DATA_LENGTH_CHECK(2,1));
-            cal_hex = append(cal_hex2, cal_hex1);           % ë°ì´í„° ê¸¸ì´(16ì§„ìˆ˜) 
-            data_length = hex2dec(cal_hex);                 % ë°ì´í„° ê¸¸ì´(10ì§„ìˆ˜)
-            check_length(check,:) = data_length;            % ê° ì¸ê³µìœ„ì„± ë³„ ë°ì´í„° ê¸¸ì´ ì²´í¬
+            cal_hex = append(cal_hex2, cal_hex1);           % ?°?´?„° ê¸¸ì´(16ì§„ìˆ˜) 
+            data_length = hex2dec(cal_hex);                 % ?°?´?„° ê¸¸ì´(10ì§„ìˆ˜)
+            check_length(check,:) = data_length;            % ê°? ?¸ê³µìœ„?„± ë³? ?°?´?„° ê¸¸ì´ ì²´í¬
             data_packet = zeros(data_length+packet_check_length,1);
             data_packet = string(data_packet);
-            STATE = STATE_REAL_DATA;
+            STATE = STATE_REAL_DATA_EPHEMERIS;
             check = check +1;
             
         case STATE_REAL_DATA_EPHEMERIS
@@ -119,12 +119,14 @@ for i = 1:200000
             elseif data_count == 2
                 if sat == GPS
                     fprintf("%d\n : ",x);
+                    satID = x;
 %                 elseif sat == GAL
 %                     %fprintf("%d : ",x);
 %                 elseif sat == BDS
 %                     %fprintf("%d : ",x);
                 elseif sat == GLO
                     fprintf("%d\n : ",x);
+                    satID = x;
                 end
                  
             elseif data_count >= 9 && data_count<=data_length
@@ -150,9 +152,9 @@ for i = 1:200000
         case STATE_REAL_READY_EPHEMERIS
             if sat == GPS
                 gps_data = string(zeros((data_length-8)/4,4));
-                for j = 1:(data_length-8)/4
-                    gps_data(j,:) = GPS_ephemeris_raw(4*(j)-3:4*(j),1)';
-                end    
+%                 for j = 1:(data_length-8)/4
+%                     gps_data(j,:) = GPS_ephemeris_raw(4*(j)-3:4*(j),1)';
+%                end    
 %             elseif sat == GAL
 %                 gal_data = string(zeros((data_length-8)/4,4));
 %                 for j = 1:(data_length-8)/4
@@ -165,11 +167,9 @@ for i = 1:200000
 %                 end 
             elseif sat == GLO
                 glo_data = string(zeros((data_length-8)/4,4));
-                for j = 1:(data_length-8)/4
-                    glo_data(j,:) = GLO_ephemeris_raw(4*(j)-3:4*(j),1)';
-                end                        
-                saved_data(q,:) = glo_data(1,:);
-                q = q + 1;
+%                 for j = 1:(data_length-8)/4
+%                     glo_data(j,:) = GLO_ephemeris_raw(4*(j)-3:4*(j),1)';
+%                 end                        
             end
             
             if sat == GPS || sat == GLO
@@ -273,7 +273,6 @@ for i = 1:200000
 %             clearvars data_packet
             sat = 100;
             STATE = STATE_READY1;
-            fprintf("\n");
         otherwise
             
     end
