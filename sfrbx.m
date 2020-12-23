@@ -2,7 +2,7 @@ close all
 clear
 clc
 delete(instrfindall); %Solved unavailable port error
-MyPort = serial('COM28','baudrate',9600,'databits',8,'parity','none','stopbits',1,'readasyncmode','continuous');
+MyPort = serial('COM8','baudrate',9600,'databits',8,'parity','none','stopbits',1,'readasyncmode','continuous');
 fopen(MyPort);
 disp(MyPort)
 disp('Start reading')
@@ -43,7 +43,7 @@ eph_count = 1;
 cur_sat = 0;
 
 sat = 100;
-for i = 1:100000
+for i = 1:500000
     Data = fread(MyPort,1);
 %     x(i) = uint64(Data);
     x = uint8(Data);
@@ -118,14 +118,14 @@ for i = 1:100000
                
             elseif data_count == 2
                 if sat == GPS
-                    fprintf("%d\n : ",x);
+                    fprintf("%d\n ",x);
                     satID = x;
 %                 elseif sat == GAL
 %                     %fprintf("%d : ",x);
 %                 elseif sat == BDS
 %                     %fprintf("%d : ",x);
                 elseif sat == GLO
-                    fprintf("%d\n : ",x);
+                    fprintf("%d\n ",x);
                     satID = x;
                 end
                  
@@ -254,7 +254,7 @@ for i = 1:100000
                        eph_list(cur_sat,23:30) = [glo_taun,glo_del_taun,glo_En,glo_P4,glo_FT,glo_NT,glo_n,glo_M];
                    elseif string_num == 5
                        [glo_NA,glo_tau_e,glo_N4,glo_tau_GPS,glo_ln] = GLO_parameter.string5();
-                       eph_list(cur_sat,31:35) = [glo_NA,glo_tau_c,glo_N4,glo_tau_GPS,glo_ln];
+                       eph_list(cur_sat,31:35) = [glo_NA,glo_tau_e,glo_N4,glo_tau_GPS,glo_ln];
                    elseif string_num == 6 || string_num == 8 || string_num == 10 || string_num == 12 
                        [glo_Cn,glo_Man,glo_nA,glo_tau_An,glo_lamda_An,glo_del_i_An,glo_e_An] = GLO_parameter.string_even();
                        %eph_list(cur_sat,36:42) = [glo_Cn,glo_Man,glo_nA,glo_tau_An,glo_lamda_An,glo_del_i_An,glo_e_An];

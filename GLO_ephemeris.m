@@ -15,7 +15,7 @@ classdef GLO_ephemeris < handle
        end
        
        function [num,string] = frame(model)
-            num = bin2dec(model.protocol(4,2:5));
+            num = bin2dec(model.protocol(4,25:32));
             string = bin2dec(model.protocol(1,2:5));
        end
        
