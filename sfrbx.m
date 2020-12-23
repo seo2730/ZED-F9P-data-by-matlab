@@ -95,7 +95,7 @@ for i = 1:500000
             data_packet(data_count,1) = dec2hex(x);%data_packet(data_count,1:8) = de2bi(x,8,'left-msb');
             if data_count == 1
                if x == 0
-                   fprintf("GPS ");
+%                    fprintf("GPS ");
                    sat = GPS;
                    GPS_ephemeris_raw = zeros((data_length-8),1);
                    GPS_ephemeris_raw = string(GPS_ephemeris_raw);
@@ -110,7 +110,7 @@ for i = 1:500000
 %                    BDS_ephemeris_raw = zeros((data_length-8),1);
 %                    BDS_ephemeris_raw = string(BDS_ephemeris_raw);
                elseif x == 6
-                   fprintf("GLO ")
+%                    fprintf("GLO ")
                    sat = GLO;
                    GLO_ephemeris_raw = zeros((data_length-8),1);
                    GLO_ephemeris_raw = string(GLO_ephemeris_raw);
@@ -118,14 +118,14 @@ for i = 1:500000
                
             elseif data_count == 2
                 if sat == GPS
-                    fprintf("%d\n ",x);
+%                     fprintf("%d\n ",x);
                     satID = x;
 %                 elseif sat == GAL
 %                     %fprintf("%d : ",x);
 %                 elseif sat == BDS
 %                     %fprintf("%d : ",x);
                 elseif sat == GLO
-                    fprintf("%d\n ",x);
+%                     fprintf("%d\n ",x);
                     satID = x;
                 end
                  
@@ -195,13 +195,14 @@ for i = 1:500000
             
             if sat == GPS
                 GPS_parameter = GPS_ephemeris(gps_data);
-                subframe_gps = GPS_parameter.FrameNumber();
                 sig = GPS_parameter.CheckPad();
                 
                 if sig == 0
+                    subframe_gps = GPS_parameter.FrameNumber();
+                    fprintf("%d\n ",subframe_gps);
                     if subframe_gps == 1
-                       [gps_WN,gps_toc,gps_af1,gps_af2,gps_af3] = GPS_parameter.subframe1();
-                       eph_list(cur_sat,5:9) = [gps_WN,gps_toc,gps_af1,gps_af2,gps_af3];
+                       [gps_WN,gps_toc,gps_af0,gps_af1,gps_af2] = GPS_parameter.subframe1();
+                       eph_list(cur_sat,5:9) = [gps_WN,gps_toc,gps_af0,gps_af1,gps_af2];
                     elseif subframe_gps == 2
                        [gps_Crs,gps_del_n,gps_M0,gps_Cuc,gps_e,gps_Cus,gps_root_A,gps_toe] = GPS_parameter.subframe2();
                        eph_list(cur_sat,10:17) = [gps_Crs,gps_del_n,gps_M0,gps_Cuc,gps_e,gps_Cus,gps_root_A,gps_toe];

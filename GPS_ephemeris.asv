@@ -22,25 +22,26 @@ classdef GPS_ephemeris < handle
             sig = bin2dec(model.protocol(1,1:2)); 
         end
         
-        function [t,WN,toc,af0,af1,af2] = subframe1(model)
+        function [t,WN,toc,af1,af2,af3] = subframe1(model)
+            t = bin2dec(model.protocol(2,25:26))+1024;
             WN = bin2dec(model.protocol(3,3:12))+1024;
             toc = bin2dec(model.protocol(8,11:26))*2^4; 
 
-            af2 = model.protocol(9,3:10);
+            af1 = model.protocol(9,3:10);
             if af1(1,1)==1
                 af1 = -(2^8-bin2dec(model.protocol(9,3:10)))*2^(-55);
             else
                 af1 = bin2dec(model.protocol(9,3:10))*2^(-55);
             end
 
-            af1 = model.protocol(9,11:26);
+            af2 = model.protocol(9,11:26);
             if af2(1,1)==1
                 af2 = -(2^16-bin2dec(model.protocol(9,11:26)))*2^(-43);
             else
                 af2 = bin2dec(model.protocol(9,11:26))*2^(-43);
             end     
 
-            af0 = model.protocol(10,3:24);
+            af3 = model.protocol(10,3:24);
             if af3(1,1)==1
                 af3 = -(2^22-bin2dec(model.protocol(10,3:24)))*2^(-31);
             else
